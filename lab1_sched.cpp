@@ -11,28 +11,37 @@ void set_workload(int *arriv, int *burst, _process *&pg) {
         }
 }
 
-void print_result_table(const int *ret) {
-        printf("\n\t       ");
+/*
+ * print_result_table
+ *
+ * Print out the result of scheduling algorithm.
+ */
+void print_result_table(int *&ret, _process *&pg) {
+        char label[] = {'A', 'B', 'C', 'D', 'E'};
+        printf("          arr job ");
         for (int i = 0; i < MAX_TIME; i++) {
                 printf(" %02d", i);
         }
         printf("\n-------------------------------------------------------------"
-               "--------------\n");
+               "-------------------\n");
         for (int p = 0; p < MAX_PROCESSES; p++) {
-                printf("Process %d  %dms ", p + 1, 0);
+                printf("Process %c  %d  %dms ", label[p], pg[p].arrival_time,
+                       pg[p].burst_time);
                 for (int t = 0; t < MAX_TIME; t++) {
                         if (ret[t] == p)
-                                printf(" ■■");
+                                printf(" **");
                         else
                                 printf("   ");
                 }
                 printf("\n");
         }
+        printf("\n");
 }
 
 void reset_job_state(_process *&pg) {
         for (int p = 0; p < MAX_PROCESSES; p++) {
                 pg[p].isDone = false;
+                pg[p].remain_time = pg[p].burst_time;
         }
 }
 
@@ -90,15 +99,15 @@ void FIFO(int *&ret, _process *&pg) {
 void RoundRobin(int *&ret, _process *&pg, int quantum) {
         /*
          * @quantum - Size of timeslice.
+         * @Q - scheduling queue.
+         * @isStarted - To avoid duplicate scheduling, put true into isStarted[]
+         *              when certain process is started. Index means process ID.
          */
         int curTime = 0;
         queue<_process *> Q;
+        vector<bool> isStarted(MAX_PROCESSES, false);
 
         while (curTime < MAX_TIME) {
-                /*
-                 * Find a process which has not been completed.
-                 * Push them to scheduling queue.
-                 */
 
                 /*
                  * Execute all processes in the queue.
@@ -108,28 +117,34 @@ void RoundRobin(int *&ret, _process *&pg, int quantum) {
                         sched = Q.front();
                         Q.pop();
                         for (int i = 0; i < quantum; i++) {
+                                sched->remain_time--;
+                                ret[curTime] = sched->pid;
+                                curTime++;
                                 if (sched->remain_time == 0) {
                                         sched->isDone = true;
                                         break;
                                 }
-                                sched->remain_time--;
-                                ret[curTime] = sched->pid;
-                                curTime++;
                         }
                 }
 
+                /*
+                 * Find a process which already arrived.
+                 * Push them to scheduling queue.
+                 */
                 for (int j = 0; j < MAX_PROCESSES; j++) {
                         _process *tmp = &pg[j];
-                        if ((!tmp->isDone) && (tmp->arrival_time == curTime)) {
-                                printf("_%d ", 1 + tmp->pid);
+                        if ((!tmp->isDone) && (tmp->arrival_time <= curTime) &&
+                            (!isStarted[tmp->pid])) {
                                 Q.push(tmp);
+                                isStarted[tmp->pid] = true;
                         }
                 }
 
+                /*
+                 * If process has some task remaining, push to queue again.
+                 */
                 if (sched != NULL)
-                        if (!sched->isDone) {
-                                printf("+%d ", 1 + sched->pid);
+                        if (!sched->isDone)
                                 Q.push(sched);
-                        }
         }
 }

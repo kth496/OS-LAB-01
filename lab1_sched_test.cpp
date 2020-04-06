@@ -27,11 +27,15 @@ int main() {
          *
          */
         FIFO(ptr_result, ptr);
-        // print_result_table(ptr_result);
+        print_result_table(ptr_result, ptr);
         reset_job_state(ptr);
 
         RoundRobin(ptr_result, ptr, 1);
-        print_result_table(ptr_result);
+        print_result_table(ptr_result, ptr);
+        reset_job_state(ptr);
 
+        RoundRobin(ptr_result, ptr, 4);
+        print_result_table(ptr_result, ptr);
+        reset_job_state(ptr);
         return 0;
 }
