@@ -1,7 +1,6 @@
 #pragma once
 #define MAX_PROCESSES 5
 #define MAX_TIME 20
-
 /*
  *      _process class:
  *
@@ -25,11 +24,13 @@ class _process {
         int burst_time;
         int remain_time;
         bool isDone;
+        bool isScheduled;
         _process() {
                 arrival_time = 0;
                 burst_time = 0;
                 remain_time = 0;
                 isDone = false;
+                isScheduled = false;
         };
 };
 
@@ -42,6 +43,13 @@ void print_result_table(int *&ret, _process *&pg);
 
 void reset_job_state(_process *&pg);
 
-void FIFO(int *&ret, _process *&pg);
+void push_process_to_readyQ(int curTime, ...);
+
+/*
+ * Scehduling Algorithm
+ */
+void FIFO(int *&ret, _process *&pg, int quantum);
 
 void RoundRobin(int *&ret, _process *&pg, int quantum);
+
+void MLFQ(int *&ret, _process *&pg, int quantum);
