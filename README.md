@@ -9,8 +9,9 @@
 - 유닉스 계열에서는 make로, 윈도우에 MinGW를 설치해서 사용하는 경우에는 mingw32-make.exe 로 컴파일
 
 ### 결과
-
-![image](https://user-images.githubusercontent.com/54257564/78812415-5acd0700-7a06-11ea-98b8-1612f732b24c.png)
+<p align="center">
+<img src="https://user-images.githubusercontent.com/54257564/78812415-5acd0700-7a06-11ea-98b8-1612f732b24c.png" width="600">
+</P>
 
 ### TODO
 
