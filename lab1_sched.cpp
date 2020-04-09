@@ -95,9 +95,10 @@ void push_process_to_readyQ(int curTime, queue<_process *> *&Q, _process *&pg) {
  * @Q_ptr - Pointer of ready Queue.
  */
 void FIFO(int *&ret, _process *&pg, int quantum) {
+        int *testing = ret;
         int curTime = 0;
         queue<_process *> Q;
-        queue<_process *> *Q_ptr = addressof(Q);
+        queue<_process *> *Q_ptr = &Q;
 
         while (curTime < MAX_TIME) {
                 push_process_to_readyQ(curTime, Q_ptr, pg);
@@ -107,9 +108,9 @@ void FIFO(int *&ret, _process *&pg, int quantum) {
                 while (!Q.empty()) {
                         _process *sched = Q.front();
                         Q.pop();
-                        for (int i = curTime; i < curTime + sched->burst_time;
-                             i++) {
-                                ret[i] = sched->pid;
+                        for (int i = 0; i < sched->burst_time; i++) {
+                                ret[i + curTime] = sched->pid;
+                                push_process_to_readyQ(curTime + i, Q_ptr, pg);
                         }
                         sched->isDone = true;
                         curTime += sched->burst_time;
@@ -130,7 +131,7 @@ void RoundRobin(int *&ret, _process *&pg, int quantum) {
          */
         int curTime = 0;
         queue<_process *> Q;
-        queue<_process *> *Q_ptr = addressof(Q);
+        queue<_process *> *Q_ptr = &Q;
 
         while (curTime < MAX_TIME) {
                 /*

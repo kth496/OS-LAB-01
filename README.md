@@ -10,7 +10,9 @@
 
 ### 결과
 
-![image](https://user-images.githubusercontent.com/54257564/78812415-5acd0700-7a06-11ea-98b8-1612f732b24c.png)
+<p align="center">
+<img src="https://user-images.githubusercontent.com/54257564/78812415-5acd0700-7a06-11ea-98b8-1612f732b24c.png" width="600">
+</P>
 
 ### TODO
 
