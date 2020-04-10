@@ -132,7 +132,6 @@ void RoundRobin(int *&ret, _process *&pg, int quantum) {
          */
         int curTime = 0;
         queue<_process *> Q;
-        queue<_process *> *Q_ptr = &Q;
 
         while (curTime < MAX_TIME) {
                 /*
@@ -146,14 +145,14 @@ void RoundRobin(int *&ret, _process *&pg, int quantum) {
                                 sched->remain_time--;
                                 ret[curTime] = sched->pid;
                                 curTime++;
-                                push_process_to_readyQ(curTime, Q_ptr, pg);
+                                push_process_to_readyQ(curTime, &Q, pg);
                                 if (sched->remain_time == 0) {
                                         sched->isDone = true;
                                         break;
                                 }
                         }
                 }
-                push_process_to_readyQ(curTime, Q_ptr, pg);
+                push_process_to_readyQ(curTime, &Q, pg);
 
                 /*
                  * If process has some task remaining, push to queue again.
@@ -180,8 +179,6 @@ void MLFQ(int *&ret, _process *&pg, int quantum) {
         queue<_process *> Q2;
         queue<_process *> *queueList[] = {&Q0, &Q1, &Q2};
         int Q_timeQuantum[3];
-
-        // queue<_process *> *curQueue = &Q0;
         int curQueueIndex = 0;
 
         for (int i = 0; i < 3; i++) {
@@ -267,6 +264,8 @@ int lcm(int a, int b) { return a * b / gcd(a, b); }
 
 /*
  * Stride Scheduler
+ *
+ * @s_pass - Smallest Pass Value
  */
 void Stride(int *&ret, _process *&pg) {
         int curTime = 0;
@@ -287,9 +286,7 @@ void Stride(int *&ret, _process *&pg) {
                pg[2].stride, pg[3].stride, pg[4].stride);
 
         while (curTime < MAX_TIME) {
-
                 s_pass = 0;
-
                 for (index = 1; index < MAX_PROCESSES; index++) {
                         if (pg[s_pass].pass_value > pg[index].pass_value) {
                                 s_pass = index;
