@@ -11,12 +11,13 @@ using namespace std;
  *
  * @burst - Array of time of process burst time.
  */
-void set_workload(int *arriv, int *burst, _process *&pg) {
+void set_workload(int *arriv, int *burst, _process *&pg, int *tickets) {
         for (int i = 0; i < MAX_PROCESSES; i++) {
                 pg[i].pid = i;
                 pg[i].arrival_time = arriv[i];
                 pg[i].burst_time = burst[i];
                 pg[i].remain_time = burst[i];
+                pg[i].ticket = tickets[i];
         }
 }
 
@@ -245,3 +246,59 @@ void MLFQ(int *&ret, _process *&pg, int quantum) {
                 curQueueIndex = 0;
         }
 }
+
+/*
+ * function for the greatest common denominator
+ */
+int gcd(int a, int b) {
+        int c;
+        while (b != 0) {
+                c = a % b;
+                a = b;
+                b = c;
+        }
+        return a;
+}
+
+/*
+ * function for the least common multiple
+ */
+int lcm(int a, int b) { return a * b / gcd(a, b); }
+
+/*
+ * Stride Scheduler
+ */
+void Stride(int *&ret, _process *&pg) {
+        int curTime = 0;
+        int LCM = pg[0].ticket;
+        int index, s_pass;
+
+        /*
+         * step to make proper stride
+         */
+        for (int i = 1; i < MAX_PROCESSES; i++) {
+                LCM = lcm(LCM, pg[i].ticket);
+        }
+        for (int i = 0; i < MAX_PROCESSES; i++) {
+                pg[i].stride = LCM / pg[i].ticket;
+        }
+
+        printf("stride : %d  %d  %d  %d  %d\n", pg[0].stride, pg[1].stride,
+               pg[2].stride, pg[3].stride, pg[4].stride);
+
+        while (curTime < MAX_TIME) {
+
+                s_pass = 0;
+
+                for (index = 1; index < MAX_PROCESSES; index++) {
+                        if (pg[s_pass].pass_value > pg[index].pass_value) {
+                                s_pass = index;
+                        }
+                }
+
+                ret[curTime] = pg[s_pass].pid;
+                curTime++;
+
+                pg[s_pass].pass_value += pg[s_pass].stride;
+        }
+};

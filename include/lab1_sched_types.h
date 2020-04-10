@@ -23,12 +23,18 @@ class _process {
         int arrival_time;
         int burst_time;
         int remain_time;
+        int ticket;
+        int stride;
+        int pass_value;
         bool isDone;
         bool isScheduled;
         _process() {
                 arrival_time = 0;
                 burst_time = 0;
                 remain_time = 0;
+                ticket = 0;
+                stride = 0;
+                pass_value = 0;
                 isDone = false;
                 isScheduled = false;
         };
@@ -37,7 +43,7 @@ class _process {
 /*
  * Comment about the functions are written in "lab1_sched.cpp"
  */
-void set_workload(int *arriv, int *burst, _process *&pg);
+void set_workload(int *arriv, int *burst, _process *&pg, int *tickets);
 
 void print_result_table(int *&ret, _process *&pg);
 
@@ -53,3 +59,12 @@ void FIFO(int *&ret, _process *&pg, int quantum);
 void RoundRobin(int *&ret, _process *&pg, int quantum);
 
 void MLFQ(int *&ret, _process *&pg, int quantum);
+
+void Stride(int *&ret, _process *&pg);
+
+/*
+ * function for stride
+ */
+int gcd(int a, int b);
+
+int lcm(int a, int b);
