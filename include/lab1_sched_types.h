@@ -1,4 +1,5 @@
 #pragma once
+#include <queue>
 #define MAX_PROCESSES 5
 #define MAX_TIME 20
 /*
@@ -51,16 +52,19 @@ void reset_job_state(_process *&pg);
 
 void push_process_to_readyQ(int curTime, ...);
 
+void push_readyQ_v2(int curTime, ...);
 /*
  * Scehduling Algorithm
  */
-void FIFO(int *&ret, _process *&pg, int quantum);
+void FIFO(int *ret, _process *pg);
 
-void RoundRobin(int *&ret, _process *&pg, int quantum);
+// void RoundRobin(int *ret, _process *pg, int quantum);
+void RoundRobin(int *ret, _process *pg, int quantum, int _curTime = 0,
+                std::queue<_process *> *given_Q = 0);
 
-void MLFQ(int *&ret, _process *&pg, int quantum);
+void MLFQ(int *ret, _process *pg, int quantum);
 
-void Stride(int *&ret, _process *&pg);
+void Stride(int *ret, _process *pg);
 
 /*
  * function for stride

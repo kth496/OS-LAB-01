@@ -35,44 +35,34 @@ int main() {
         /*
          * Simulation
          */
-
-        // void (*fp[])(int *&, _process *&, int) = {FIFO, RoundRobin,
-        // RoundRobin,
-        //                                           MLFQ, MLFQ};
-        // for (int f = 0; f < 6; f++) {
-        //         fp[f](ptr_result, ptr, 1);
-        //         print_result_table(ptr_result, ptr);
-        //         reset_job_state(ptr);
-        // }
-
-        printf("\nFIFO\n");
-        FIFO(ptr_result, ptr, 0);
-        print_result_table(ptr_result, ptr);
-        reset_job_state(ptr);
+        // printf("\nFIFO\n");
+        // FIFO(ptr_result, ptr);
+        // print_result_table(ptr_result, ptr);
+        // reset_job_state(ptr);
 
         printf("\nRound Robin  time quantum = 1\n");
         RoundRobin(ptr_result, ptr, 1);
         print_result_table(ptr_result, ptr);
         reset_job_state(ptr);
 
-        printf("\nRound Robin  time quantum = 4\n");
-        RoundRobin(ptr_result, ptr, 4);
-        print_result_table(ptr_result, ptr);
-        reset_job_state(ptr);
+        // printf("\nRound Robin  time quantum = 4\n");
+        // RoundRobin(ptr_result, ptr, 4);
+        // print_result_table(ptr_result, ptr);
+        // reset_job_state(ptr);
 
         printf("\nMLFQ  time quantum = 1\n");
         MLFQ(ptr_result, ptr, 1);
         print_result_table(ptr_result, ptr);
         reset_job_state(ptr);
 
-        printf("\nMLFQ  time quantum = 2i\n");
-        MLFQ(ptr_result, ptr, 2);
-        print_result_table(ptr_result, ptr);
-        reset_job_state(ptr);
+        // printf("\nMLFQ  time quantum = 2i\n");
+        // MLFQ(ptr_result, ptr, 2);
+        // print_result_table(ptr_result, ptr);
+        // reset_job_state(ptr);
 
-        printf("\nStride Scheduler\n");
-        Stride(ptr_result, ptr);
-        print_result_table(ptr_result, ptr);
-        reset_job_state(ptr);
+        // printf("\nStride Scheduler\n");
+        // Stride(ptr_result, ptr);
+        // print_result_table(ptr_result, ptr);
+        // reset_job_state(ptr);
         return 0;
 }

@@ -78,6 +78,17 @@ void push_process_to_readyQ(int curTime, queue<_process *> *&Q, _process *&pg) {
         }
 }
 
+void push_readyQ_v2(int curTime, queue<_process *> *Q, _process *pg) {
+        for (int j = 0; j < MAX_PROCESSES; j++) {
+                _process *tmp = &pg[j];
+                if ((!tmp->isDone) && (!tmp->isScheduled) &&
+                    (tmp->arrival_time <= curTime)) {
+                        (*Q).push(tmp);
+                        tmp->isScheduled = true;
+                }
+        }
+}
+
 /*
  * FIFO(FCFS)
  *
@@ -87,22 +98,16 @@ void push_process_to_readyQ(int curTime, queue<_process *> *&Q, _process *&pg) {
  *
  * @pg - (processGroup) Array of _process.
  *
- * @quantum - Useless, but need to fit the function form with others.
- *
  * @curTime - Indicates timeflow, 0 to MAX_TIME
  *
  * @Q - Ready queue.
- *
- * @Q_ptr - Pointer of ready Queue.
  */
-void FIFO(int *&ret, _process *&pg, int quantum) {
-        int *testing = ret;
+void FIFO(int *ret, _process *pg) {
         int curTime = 0;
         queue<_process *> Q;
-        queue<_process *> *Q_ptr = &Q;
 
         while (curTime < MAX_TIME) {
-                push_process_to_readyQ(curTime, Q_ptr, pg);
+                push_readyQ_v2(curTime, &Q, pg);
                 /*
                  * Execute all processes in the queue.
                  */
@@ -111,7 +116,7 @@ void FIFO(int *&ret, _process *&pg, int quantum) {
                         Q.pop();
                         for (int i = 0; i < sched->burst_time; i++) {
                                 ret[i + curTime] = sched->pid;
-                                push_process_to_readyQ(curTime + i, Q_ptr, pg);
+                                push_readyQ_v2(curTime + i, &Q, pg);
                         }
                         sched->isDone = true;
                         curTime += sched->burst_time;
@@ -122,22 +127,24 @@ void FIFO(int *&ret, _process *&pg, int quantum) {
 /*
  * RoundRobin
  */
-void RoundRobin(int *&ret, _process *&pg, int quantum) {
+void RoundRobin(int *ret, _process *pg, int quantum, int _curTime,
+                queue<_process *> *given_Q) {
         /*
          * @quantum - Size of timeslice.
          *
          * @Q - Ready queue.
-         *
-         * @Q_ptr - Pointer of ready Queue.
          */
-        int curTime = 0;
+        int curTime = _curTime;
         queue<_process *> Q;
+        if (given_Q)
+                Q = *given_Q;
+        _process *sched;
 
         while (curTime < MAX_TIME) {
                 /*
                  * Execute all processes in the queue.
                  */
-                _process *sched = NULL;
+                push_readyQ_v2(curTime, &Q, pg);
                 if (!Q.empty()) {
                         sched = Q.front();
                         Q.pop();
@@ -145,21 +152,19 @@ void RoundRobin(int *&ret, _process *&pg, int quantum) {
                                 sched->remain_time--;
                                 ret[curTime] = sched->pid;
                                 curTime++;
-                                push_process_to_readyQ(curTime, &Q, pg);
+                                push_readyQ_v2(curTime, &Q, pg);
                                 if (sched->remain_time == 0) {
                                         sched->isDone = true;
                                         break;
                                 }
                         }
                 }
-                push_process_to_readyQ(curTime, &Q, pg);
 
                 /*
                  * If process has some task remaining, push to queue again.
                  */
-                if (sched != NULL)
-                        if (!sched->isDone)
-                                Q.push(sched);
+                if (!sched->isDone)
+                        Q.push(sched);
         }
 }
 
@@ -168,7 +173,7 @@ void RoundRobin(int *&ret, _process *&pg, int quantum) {
  *
  * Time quantum of Q_i is calculated by quantum^i
  */
-void MLFQ(int *&ret, _process *&pg, int quantum) {
+void MLFQ(int *ret, _process *pg, int quantum) {
         /*
          * Priority: Most highest queue is Q0.
          * Q0 > Q1 > Q2
@@ -180,13 +185,14 @@ void MLFQ(int *&ret, _process *&pg, int quantum) {
         queue<_process *> *queueList[] = {&Q0, &Q1, &Q2};
         int Q_timeQuantum[3];
         int curQueueIndex = 0;
+        _process *sched;
 
         for (int i = 0; i < 3; i++) {
                 Q_timeQuantum[i] = (int)pow(quantum, i);
         }
 
         while (curTime < MAX_TIME) {
-                _process *sched = NULL;
+                push_readyQ_v2(curTime, queueList[0], pg);
                 /*
                  * TODO:
                  *      Is it possible to optimize under WHILE loop?
@@ -204,38 +210,37 @@ void MLFQ(int *&ret, _process *&pg, int quantum) {
                  * TODO:
                  *      Replace under logics into RoundRobin.
                  */
-                if (!(*queueList[curQueueIndex]).empty()) {
-                        sched = (*queueList[curQueueIndex]).front();
-                        (*queueList[curQueueIndex]).pop();
-                        for (int i = 0; i < Q_timeQuantum[curQueueIndex]; i++) {
-                                sched->remain_time--;
-                                ret[curTime] = sched->pid;
-                                curTime++;
-                                push_process_to_readyQ(curTime, queueList[0],
-                                                       pg);
-                                if (sched->remain_time == 0) {
-                                        sched->isDone = true;
-                                        break;
-                                }
-                        }
-                }
-
-                push_process_to_readyQ(curTime, queueList[0], pg);
+                RoundRobin(ret, pg, quantum, curTime, queueList[curQueueIndex]);
+                // if (!(*queueList[curQueueIndex]).empty()) {
+                //         sched = (*queueList[curQueueIndex]).front();
+                //         (*queueList[curQueueIndex]).pop();
+                //         for (int i = 0; i < Q_timeQuantum[curQueueIndex];
+                //         i++) {
+                //                 sched->remain_time--;
+                //                 ret[curTime] = sched->pid;
+                //                 curTime++;
+                //                 push_readyQ_v2(curTime, queueList[0], pg);
+                //                 if (sched->remain_time == 0) {
+                //                         sched->isDone = true;
+                //                         break;
+                //                 }
+                //         }
+                // }
 
                 /*
                  * TODO:
                  *      Is it possible to optimize 3-indented code?
                  */
-                if (sched != NULL)
-                        if (!sched->isDone) {
-                                if (Q0.empty() && Q1.empty() && Q2.empty()) {
-                                        (*queueList[curQueueIndex]).push(sched);
-                                } else {
-                                        if (curQueueIndex != 2)
-                                                curQueueIndex++;
-                                        (*queueList[curQueueIndex]).push(sched);
-                                }
+
+                if (!sched->isDone) {
+                        if (Q0.empty() && Q1.empty() && Q2.empty()) {
+                                (*queueList[curQueueIndex]).push(sched);
+                        } else {
+                                if (curQueueIndex != 2)
+                                        curQueueIndex++;
+                                (*queueList[curQueueIndex]).push(sched);
                         }
+                }
 
                 /*
                  * Move to topmost queue.
@@ -267,7 +272,7 @@ int lcm(int a, int b) { return a * b / gcd(a, b); }
  *
  * @s_pass - Smallest Pass Value
  */
-void Stride(int *&ret, _process *&pg) {
+void Stride(int *ret, _process *pg) {
         int curTime = 0;
         int LCM = pg[0].ticket;
         int index, s_pass;
