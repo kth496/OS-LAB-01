@@ -92,13 +92,13 @@ void push_readyQ_v2(int curTime, queue<_process *> *Q, _process *pg) {
 /*
  * FIFO(FCFS)
  *
- * @ret - Indicates which process is running at that time.
+ * @ret - Denotes which process is running at that time.
  * E.g. ret[0] = 1,
  * means process '1' is running at the '0' momment of timeflow.
  *
  * @pg - (processGroup) Array of _process.
  *
- * @curTime - Indicates timeflow, 0 to MAX_TIME
+ * @curTime - Denotes timeflow, 0 to MAX_TIME
  *
  * @Q - Ready queue.
  */
@@ -127,17 +127,14 @@ void FIFO(int *ret, _process *pg) {
 /*
  * RoundRobin
  */
-void RoundRobin(int *ret, _process *pg, int quantum, int _curTime,
-                queue<_process *> *given_Q) {
+void RoundRobin(int *ret, _process *pg, int quantum) {
         /*
          * @quantum - Size of timeslice.
          *
          * @Q - Ready queue.
          */
-        int curTime = _curTime;
+        int curTime = 0;
         queue<_process *> Q;
-        if (given_Q)
-                Q = *given_Q;
         _process *sched;
 
         while (curTime < MAX_TIME) {
@@ -182,9 +179,9 @@ void MLFQ(int *ret, _process *pg, int quantum) {
         queue<_process *> Q0;
         queue<_process *> Q1;
         queue<_process *> Q2;
-        queue<_process *> *queueList[] = {&Q0, &Q1, &Q2};
+        queue<_process *> *qList[] = {&Q0, &Q1, &Q2};
         int Q_timeQuantum[3];
-        int curQueueIndex = 0;
+        int cur_Q_index = 0;
         _process *sched;
 
         for (int i = 0; i < 3; i++) {
@@ -192,16 +189,15 @@ void MLFQ(int *ret, _process *pg, int quantum) {
         }
 
         while (curTime < MAX_TIME) {
-                push_readyQ_v2(curTime, queueList[0], pg);
+                push_readyQ_v2(curTime, qList[0], pg);
                 /*
                  * TODO:
                  *      Is it possible to optimize under WHILE loop?
                  */
                 while (1) {
-                        if (!(*queueList[curQueueIndex]).empty() ||
-                            curQueueIndex == 2)
+                        if (!(*qList[cur_Q_index]).empty() || cur_Q_index == 2)
                                 break;
-                        curQueueIndex++;
+                        cur_Q_index++;
                 }
 
                 /*
@@ -210,42 +206,40 @@ void MLFQ(int *ret, _process *pg, int quantum) {
                  * TODO:
                  *      Replace under logics into RoundRobin.
                  */
-                RoundRobin(ret, pg, quantum, curTime, queueList[curQueueIndex]);
-                // if (!(*queueList[curQueueIndex]).empty()) {
-                //         sched = (*queueList[curQueueIndex]).front();
-                //         (*queueList[curQueueIndex]).pop();
-                //         for (int i = 0; i < Q_timeQuantum[curQueueIndex];
-                //         i++) {
-                //                 sched->remain_time--;
-                //                 ret[curTime] = sched->pid;
-                //                 curTime++;
-                //                 push_readyQ_v2(curTime, queueList[0], pg);
-                //                 if (sched->remain_time == 0) {
-                //                         sched->isDone = true;
-                //                         break;
-                //                 }
-                //         }
-                // }
+                // RoundRobin(ret, pg, quantum, curTime, qList[cur_Q_index],
+                // &Q0);
+                if (!(*qList[cur_Q_index]).empty()) {
+                        sched = (*qList[cur_Q_index]).front();
+                        (*qList[cur_Q_index]).pop();
+                        for (int i = 0; i < Q_timeQuantum[cur_Q_index]; i++) {
+                                sched->remain_time--;
+                                ret[curTime] = sched->pid;
+                                curTime++;
+                                push_readyQ_v2(curTime, qList[0], pg);
+                                if (sched->remain_time == 0) {
+                                        sched->isDone = true;
+                                        break;
+                                }
+                        }
+                }
 
                 /*
                  * TODO:
                  *      Is it possible to optimize 3-indented code?
                  */
 
-                if (!sched->isDone) {
-                        if (Q0.empty() && Q1.empty() && Q2.empty()) {
-                                (*queueList[curQueueIndex]).push(sched);
-                        } else {
-                                if (curQueueIndex != 2)
-                                        curQueueIndex++;
-                                (*queueList[curQueueIndex]).push(sched);
-                        }
+                if (Q0.empty() && Q1.empty() && Q2.empty()) {
+                        (*qList[cur_Q_index]).push(sched);
+                } else {
+                        if (cur_Q_index != 2)
+                                cur_Q_index++;
+                        (*qList[cur_Q_index]).push(sched);
                 }
 
                 /*
                  * Move to topmost queue.
                  */
-                curQueueIndex = 0;
+                cur_Q_index = 0;
         }
 }
 

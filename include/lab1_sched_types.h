@@ -59,8 +59,7 @@ void push_readyQ_v2(int curTime, ...);
 void FIFO(int *ret, _process *pg);
 
 // void RoundRobin(int *ret, _process *pg, int quantum);
-void RoundRobin(int *ret, _process *pg, int quantum, int _curTime = 0,
-                std::queue<_process *> *given_Q = 0);
+void RoundRobin(int *ret, _process *pg, int quantum);
 
 void MLFQ(int *ret, _process *pg, int quantum);
 

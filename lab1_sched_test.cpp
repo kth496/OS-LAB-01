@@ -40,10 +40,10 @@ int main() {
         // print_result_table(ptr_result, ptr);
         // reset_job_state(ptr);
 
-        printf("\nRound Robin  time quantum = 1\n");
-        RoundRobin(ptr_result, ptr, 1);
-        print_result_table(ptr_result, ptr);
-        reset_job_state(ptr);
+        // printf("\nRound Robin  time quantum = 1\n");
+        // RoundRobin(ptr_result, ptr, 1);
+        // print_result_table(ptr_result, ptr);
+        // reset_job_state(ptr);
 
         // printf("\nRound Robin  time quantum = 4\n");
         // RoundRobin(ptr_result, ptr, 4);
