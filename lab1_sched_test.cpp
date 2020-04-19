@@ -4,12 +4,12 @@ using namespace std;
 
 /** Set a workload here **/
 /* CASE 1 */
-// int arrival_times[MAX_PROCESSES] = {0, 2, 4, 6, 8};
-// int burst_times[MAX_PROCESSES] = {3, 6, 4, 5, 2};
+int arrival_times[MAX_PROCESSES] = {0, 2, 4, 6, 8};
+int burst_times[MAX_PROCESSES] = {3, 6, 4, 5, 2};
 
 /* CASE 2 */
-int arrival_times[MAX_PROCESSES] = {0, 6, 4, 13, 11};
-int burst_times[MAX_PROCESSES] = {10, 3, 2, 4, 1};
+// int arrival_times[MAX_PROCESSES] = {0, 6, 4, 13, 11};
+// int burst_times[MAX_PROCESSES] = {10, 3, 2, 4, 1};
 
 /* CASE 3 */
 // int arrival_times[MAX_PROCESSES] = {0, 6, 4, 5, 8};
@@ -55,10 +55,10 @@ int main() {
         print_result_table(ptr_result, ptr);
         reset_job_state(ptr);
 
-        // printf("\nMLFQ  time quantum = 2i\n");
-        // MLFQ(ptr_result, ptr, 2);
-        // print_result_table(ptr_result, ptr);
-        // reset_job_state(ptr);
+        printf("\nMLFQ  time quantum = 2i\n");
+        MLFQ(ptr_result, ptr, 2);
+        print_result_table(ptr_result, ptr);
+        reset_job_state(ptr);
 
         // printf("\nStride Scheduler\n");
         // Stride(ptr_result, ptr);

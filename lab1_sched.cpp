@@ -227,13 +227,14 @@ void MLFQ(int *ret, _process *pg, int quantum) {
                  * TODO:
                  *      Is it possible to optimize 3-indented code?
                  */
-
-                if (Q0.empty() && Q1.empty() && Q2.empty()) {
-                        (*qList[cur_Q_index]).push(sched);
-                } else {
-                        if (cur_Q_index != 2)
-                                cur_Q_index++;
-                        (*qList[cur_Q_index]).push(sched);
+                if (!sched->isDone) {
+                        if (Q0.empty() && Q1.empty() && Q2.empty()) {
+                                (*qList[cur_Q_index]).push(sched);
+                        } else {
+                                if (cur_Q_index != 2)
+                                        cur_Q_index++;
+                                (*qList[cur_Q_index]).push(sched);
+                        }
                 }
 
                 /*
