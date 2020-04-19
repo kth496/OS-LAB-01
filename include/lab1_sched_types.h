@@ -50,9 +50,7 @@ void print_result_table(int *&ret, _process *&pg);
 
 void reset_job_state(_process *&pg);
 
-void push_process_to_readyQ(int curTime, ...);
-
-void push_readyQ_v2(int curTime, ...);
+void push_ti_readyQ(int curTime, ...);
 /*
  * Scehduling Algorithm
  */

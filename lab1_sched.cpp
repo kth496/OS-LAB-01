@@ -62,23 +62,13 @@ void reset_job_state(_process *&pg) {
 }
 
 /*
- * push_process_to_readyQ
+ * push_to_readyQ
  *
  * Find a process which already arrived.
  * Push them to ready queue.
  */
-void push_process_to_readyQ(int curTime, queue<_process *> *&Q, _process *&pg) {
-        for (int j = 0; j < MAX_PROCESSES; j++) {
-                _process *tmp = &pg[j];
-                if ((!tmp->isDone) && (!tmp->isScheduled) &&
-                    (tmp->arrival_time <= curTime)) {
-                        (*Q).push(tmp);
-                        tmp->isScheduled = true;
-                }
-        }
-}
 
-void push_readyQ_v2(int curTime, queue<_process *> *Q, _process *pg) {
+void push_to_readyQ(int curTime, queue<_process *> *Q, _process *pg) {
         for (int j = 0; j < MAX_PROCESSES; j++) {
                 _process *tmp = &pg[j];
                 if ((!tmp->isDone) && (!tmp->isScheduled) &&
@@ -107,7 +97,7 @@ void FIFO(int *ret, _process *pg) {
         queue<_process *> Q;
 
         while (curTime < MAX_TIME) {
-                push_readyQ_v2(curTime, &Q, pg);
+                push_to_readyQ(curTime, &Q, pg);
                 /*
                  * Execute all processes in the queue.
                  */
@@ -116,7 +106,7 @@ void FIFO(int *ret, _process *pg) {
                         Q.pop();
                         for (int i = 0; i < sched->burst_time; i++) {
                                 ret[i + curTime] = sched->pid;
-                                push_readyQ_v2(curTime + i, &Q, pg);
+                                push_to_readyQ(curTime + i, &Q, pg);
                         }
                         sched->isDone = true;
                         curTime += sched->burst_time;
@@ -141,7 +131,7 @@ void RoundRobin(int *ret, _process *pg, int quantum) {
                 /*
                  * Execute all processes in the queue.
                  */
-                push_readyQ_v2(curTime, &Q, pg);
+                push_to_readyQ(curTime, &Q, pg);
                 if (!Q.empty()) {
                         sched = Q.front();
                         Q.pop();
@@ -149,7 +139,7 @@ void RoundRobin(int *ret, _process *pg, int quantum) {
                                 sched->remain_time--;
                                 ret[curTime] = sched->pid;
                                 curTime++;
-                                push_readyQ_v2(curTime, &Q, pg);
+                                push_to_readyQ(curTime, &Q, pg);
                                 if (sched->remain_time == 0) {
                                         sched->isDone = true;
                                         break;
@@ -189,7 +179,7 @@ void MLFQ(int *ret, _process *pg, int quantum) {
         }
 
         while (curTime < MAX_TIME) {
-                push_readyQ_v2(curTime, qList[0], pg);
+                push_to_readyQ(curTime, qList[0], pg);
                 /*
                  * TODO:
                  *      Is it possible to optimize under WHILE loop?
@@ -215,7 +205,7 @@ void MLFQ(int *ret, _process *pg, int quantum) {
                                 sched->remain_time--;
                                 ret[curTime] = sched->pid;
                                 curTime++;
-                                push_readyQ_v2(curTime, qList[0], pg);
+                                push_to_readyQ(curTime, qList[0], pg);
                                 if (sched->remain_time == 0) {
                                         sched->isDone = true;
                                         break;

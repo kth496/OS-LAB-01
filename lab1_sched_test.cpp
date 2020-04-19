@@ -50,19 +50,19 @@ int main() {
         // print_result_table(ptr_result, ptr);
         // reset_job_state(ptr);
 
-        printf("\nMLFQ  time quantum = 1\n");
-        MLFQ(ptr_result, ptr, 1);
-        print_result_table(ptr_result, ptr);
-        reset_job_state(ptr);
+        // printf("\nMLFQ  time quantum = 1\n");
+        // MLFQ(ptr_result, ptr, 1);
+        // print_result_table(ptr_result, ptr);
+        // reset_job_state(ptr);
 
         printf("\nMLFQ  time quantum = 2i\n");
         MLFQ(ptr_result, ptr, 2);
         print_result_table(ptr_result, ptr);
         reset_job_state(ptr);
 
-        // printf("\nStride Scheduler\n");
-        // Stride(ptr_result, ptr);
-        // print_result_table(ptr_result, ptr);
-        // reset_job_state(ptr);
+        printf("\nStride Scheduler\n");
+        Stride(ptr_result, ptr);
+        print_result_table(ptr_result, ptr);
+        reset_job_state(ptr);
         return 0;
 }
