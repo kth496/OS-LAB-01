@@ -1,3 +1,14 @@
+/*
+ *	DKU Operating System Lab
+ *	    Lab1 (Scheduler Algorithm Simulator)
+ *	    Student id : 32131417, 32173656
+ *	    Student name : 김태홍, 이환주
+ *
+ *   lab1_sched_types.h :
+ *       - lab1 header file.
+ *       - must contains scueduler algorithm function's declations.
+ *
+ */
 #pragma once
 #include <queue>
 #define MAX_PROCESSES 5
